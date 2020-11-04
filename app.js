@@ -9,7 +9,7 @@ const MongoDBStore = require('connect-mongodb-session')(session);
 const errorController = require('./controllers/error');
 const User = require('./models/user');
 
-const MONGODB_URI = 'mongodb+srv://freak2810:Sheena&mani01@node-js-course.jvuac.mongodb.net/shop';
+const MONGODB_URI = 'mongodb+srv://freak2810:Sheena&mani01@node-course.jvuac.mongodb.net/shop';
 
 const app = express();
 const store = new MongoDBStore({
@@ -39,12 +39,16 @@ app.use(
 );
 
 app.use((req, res, next) => {
-  User.findById('5f9e52668a83ec17a0e287d8')
+  if (!req.session.user) {
+    return next();
+  }
+  User.findById(req.session.user._id)
     .then(user => {
       req.user = user;
       next();
     })
     .catch(err => console.log(err));
+
 });
 
 app.use('/admin', adminRoutes);
