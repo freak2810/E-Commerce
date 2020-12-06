@@ -1,9 +1,8 @@
 const fs = require('fs');
 const path = require('path');
-const PDFDocument = require('pdfkit');
 const stripe = require('stripe')('sk_test_51HvGvoEAUlNhYOmLHajIZNUOVMFONiPaxnCixxnN8b81DE5lLYfIiO3xHt2AX4A4iBnwwBw2p2vzOkvFJRJxsPTT005LVGtVc3');
 
-
+const PDFDocument = require('pdfkit');
 
 const Product = require('../models/product');
 const Order = require('../models/order');
@@ -165,8 +164,10 @@ exports.getCheckout = (req, res, next) => {
             quantity: p.quantity
           };
         }),
-        success_url: `${req.protocol}://${req.get('host')}/checkout/success`,
-        cancel_url: `${req.protocol}://${req.get('host')}/checkout/cancel`
+        // success_url: `${req.protocol}://${req.get('host')}/checkout/success`,
+        // cancel_url: `${req.protocol}://${req.get('host')}/checkout/cancel`,
+        success_url: req.protocol + '://' + req.get('host') + '/checkout/success', // => http://localhost:3000
+        cancel_url: req.protocol + '://' + req.get('host') + '/checkout/cancel'
       });
     })
     .then(session => {
@@ -276,26 +277,26 @@ exports.getInvoice = (req, res, next) => {
 
       const pdfDoc = new PDFDocument();
       res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', 'inline; filename="' + invoiceName + '"');
+      res.setHeader(
+        'Content-Disposition',
+        'inline; filename="' + invoiceName + '"'
+      );
       pdfDoc.pipe(fs.createWriteStream(invoicePath));
       pdfDoc.pipe(res);
 
       pdfDoc.fontSize(26).text('Invoice', {
         underline: true
       });
-
-      pdfDoc.text('--------------');
-
+      pdfDoc.text('-----------------------');
       let totalPrice = 0;
       order.products.forEach(prod => {
         totalPrice += prod.quantity * prod.product.price;
         pdfDoc.fontSize(14).text(`${prod.product.title} - ${prod.quantity} x $ ${prod.product.price}`);
       });
-      pdfDoc.text('--------------');
-      pdfDoc.fontSize(18).text(`Total : ${totalPrice}`);
+      pdfDoc.text('---');
+      pdfDoc.fontSize(20).text('Total Price: $' + totalPrice);
 
       pdfDoc.end();
-
       //Sychronous Data Transfer
       // fs.readFile(invoicePath, (err, data) => {
       //   if (err) {
