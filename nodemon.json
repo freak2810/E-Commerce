@@ -1,0 +1,9 @@
+{
+    "env": {
+        "MONGO_USER": "freak2810",
+        "MONGO_PASSWORD": "Sheena&mani01",
+        "DEFAULT_DATABASE": "shop",
+        "PORT": 8080,
+        "STRIPE_KEY": "sk_test_51HvGvoEAUlNhYOmLHajIZNUOVMFONiPaxnCixxnN8b81DE5lLYfIiO3xHt2AX4A4iBnwwBw2p2vzOkvFJRJxsPTT005LVGtVc3"
+    }
+}
